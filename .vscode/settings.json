@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "charconv": "cpp",
+        "istream": "cpp",
+        "memory": "cpp",
+        "ostream": "cpp",
+        "random": "cpp",
+        "sstream": "cpp",
+        "xstring": "cpp",
+        "bitset": "cpp",
+        "functional": "cpp",
+        "map": "cpp",
+        "system_error": "cpp",
+        "thread": "cpp",
+        "type_traits": "cpp",
+        "vector": "cpp",
+        "xmemory": "cpp",
+        "xstddef": "cpp"
+    }
+}

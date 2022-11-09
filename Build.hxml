@@ -1,0 +1,6 @@
+--cmd robocopy stdlib bin/stdlib /e /NFL /NDL /NJH /NJS /nc /ns /np
+-cp src
+--main blue.Blue
+--library linc_luajit
+--library Console.hx
+--cpp bin
