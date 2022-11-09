@@ -2,7 +2,7 @@
 
 # This is the repository for the Blue programming language for Mac, The Blue compiler for Mac, and the Blue standard library, all of which are licensed under GNU GPL v3
 
-# For windows and linux versions with scripting capabilities, click [Here](https://github.com/BlueTechnologies/Blue)
+# For Windows and Linux versions with scripting capabilities, click [Here](https://github.com/BlueTechnologies/Blue)
 
 # Setting up the Windows Binary
 
