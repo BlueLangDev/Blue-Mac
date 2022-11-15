@@ -64,7 +64,7 @@ class Blue {
 		if (Sys.args()[0] != null) {
 			var folder = Sys.args()[0];
 			if (folder == "targetlist") {
-				Console.log("<light_white>Supported targets as of Blue v1: " + supportedTargets.join(", ") + "</>");
+				Console.log("<light_white>Supported targets as of Blue 22: " + supportedTargets.join(", ") + "</>");
 			} else if (FileSystem.exists(folder) && FileSystem.isDirectory(folder)) {
 				mapSource(folder);
 			} else {
