@@ -3,7 +3,7 @@ package main
 type dynamic = interface{}
 
 func pop(array []dynamic) dynamic {
-    return array[len(array)]
+    return array[len(array) - 1]
 }
 
 func shift(array []dynamic) dynamic {

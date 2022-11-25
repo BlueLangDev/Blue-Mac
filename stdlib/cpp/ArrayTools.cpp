@@ -13,7 +13,7 @@ using namespace std;
 
 auto pop(auto &&array)
 {
-    return array[(int)std::size(array)];
+    return array[(int)std::size(array) - 1];
 }
 
 auto shift(auto &&array)
