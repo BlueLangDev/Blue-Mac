@@ -42,16 +42,16 @@ class Blue {
 
 	public static function main() {
 		Console.logPrefix = "";
+		if (!FileSystem.exists("project_config.json")) {
+			File.saveContent("project_config.json", projectConfig);
+		}
+		if (!FileSystem.exists("target_scripts")) {
+			FileSystem.createDirectory("target_scripts");
+		}
+		if (!FileSystem.exists("target_libraries")) {
+			FileSystem.createDirectory("target_libraries");
+		}
 		if (Sys.args()[1] != null) {
-			if (!FileSystem.exists("project_config.json")) {
-				File.saveContent("project_config.json", projectConfig);
-			}
-			if (!FileSystem.exists("target_scripts")) {
-				FileSystem.createDirectory("target_scripts");
-			}
-			if (!FileSystem.exists("target_libraries")) {
-				FileSystem.createDirectory("target_libraries");
-			}
 			var target = Sys.args()[1];
 			if (supportedTargets.contains(target)) {
 				Blue.target = target;
