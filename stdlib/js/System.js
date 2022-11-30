@@ -16,14 +16,6 @@ class System {
         throw new Error();
     }
 
-    static getDate() {
-        return Date.now()
-    }
-
-    static getTime(exitcode) {
-        return Date.getTime();
-    }
-
     static varTrace(vari) {
         console.log("" + vari);
     }

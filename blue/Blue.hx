@@ -36,8 +36,8 @@ class Blue {
 	static var buildCommand:String = "";
 
 	static var completeSyntax:Array<String> = [
-		"method", "loop ", "if", "+", "-", "mult", "div", "end", "else", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
-		"***", "main(", "throw", "or", "[", "/", "(", "else if", "<<", ">>", "null", "break", "continue", "open", "close", "targetInject!"
+		"method", "loop ", "if ", "+", "-", "mult", "div", "end", "else ", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
+		"***", "main(", "throw", "or", "[", "/", "(", "else if ", "<<", ">>", "null", "break", "continue", "open", "close", "targetInject!"
 	];
 
 	public static function main() {
@@ -433,7 +433,7 @@ class Blue {
 					if (line.contains("<<end>>")) {
 						hasCondition = false;
 					}
-					if (line.contains("if") && !line.contains("then")) {
+					if (line.replace(" ", "").startsWith("if") && !line.contains("then")) {
 						Console.log('<light_white>'
 							+ currentFile_Noerr
 							+ " - "

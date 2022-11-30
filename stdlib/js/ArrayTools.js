@@ -1,15 +1,10 @@
 class ArrayTools {
 	static pop(array) {
-		return array[array.length];
+		return array.pop();
 	}
 
 	static shift(array) {
-		return array[0];
-	}
-
-	static add(array) {
-		array[array.length + 1] = element;
-		return null;
+		return array.shift();
 	}
 
 	static arraySize(array) {

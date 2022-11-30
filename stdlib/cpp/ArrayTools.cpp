@@ -4,29 +4,32 @@
 #include <stdlib.h>
 #include <any>
 #include <iterator>
-#include <cstring>
 #include <string>
 #include <iostream>
 #include <exception>
+#include <vector>
 
 using namespace std;
 
 auto pop(auto &&array)
 {
-    return array[(int)std::size(array) - 1];
+    auto element = array[(int)std::size(array) - 1];
+    for (int i = 0; i < (int)std::size(array) - 1; i++)
+        array[i] = array[i + 1];
+    array[(int)std::size(array) - 1] = NULL;
+    return element;
 }
 
 auto shift(auto &&array)
 {
-    return array[0];
+    auto element = array[0];
+    for (int i = 1; i < (int)std::size(array); i++)
+        array[i] = array[i + 1];
+    array[(int)std::size(array) - 1] = NULL;
+    return element;
 }
 
-auto add(auto &&array, auto element)
-{
-    array[(int)std::size(array) + 1] = element;
-}
-
-auto &&arraySize(auto &&array)
+auto arraySize(auto &&array)
 {
     return (int)std::size(array);
 }

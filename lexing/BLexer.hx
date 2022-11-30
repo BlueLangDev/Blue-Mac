@@ -88,15 +88,14 @@ class BLexer {
 
 	private static var stdNames:Map<String, Array<String>> = [
 		"MathTools" => ["arccos", "cosine", "sine", "floorValue"],
-		"System" => ["runcmd", "close", "getDate", "getTime", "varTrace"],
+		"System" => ["runcmd", "close", "varTrace"],
 		"File" => ["read", "write"],
-		"ArrayTools" => ["pop", "shift", "add", "arraySize"]
+		"ArrayTools" => ["pop", "shift", "arraySize"]
 	];
 
 	private static var completeStd:Map<String, Array<Int>> = [
-		"arccos" => [1], "cosine" => [1], "power" => [1, 1], "sine" => [1], "floorValue" => [1], "runcmd" => [1], "close" => [1], "getDate" => [],
-		"getTime" => [], "read" => [1], "write" => [1, 1], "joinArray" => [1], "pop" => [1], "shift" => [1], "add" => [1, 1], "varTrace" => [1],
-		"arraySize" => [1]];
+		"arccos" => [1], "cosine" => [1], "power" => [1, 1], "sine" => [1], "floorValue" => [1], "runcmd" => [1], "close" => [1], "read" => [1],
+		"write" => [1, 1], "joinArray" => [1], "pop" => [1], "shift" => [1], "varTrace" => [1], "arraySize" => [1]];
 
 	private static var isInMethod:Bool = false;
 	private static var isInMain:Bool = false;
@@ -119,8 +118,8 @@ class BLexer {
 
 	static var tokensToParse:Array<Dynamic> = [];
 	static var completeSyntax:Array<String> = [
-		"method", "loop ", "if", "+", "-", "mult", "div", "end", "else", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
-		"***", "main(", "throw", "or", "[", "/", "(", "else if", "<<", ">>", "null", "break", "continue", "open", "close", "targetInject!"
+		"method", "loop ", "if ", "+", "-", "mult", "div", "end", "else ", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
+		"***", "main(", "throw", "or", "[", "/", "(", "else if ", "<<", ">>", "null", "break", "continue", "open", "close", "targetInject!"
 	];
 
 	public static function enumContent(contentToEnum:String, testLex:Bool = false):Bool {
@@ -230,7 +229,7 @@ class BLexer {
 			for (i in 0...completeSyntax.length) {
 				if (reg.replace(current.ltrim(), '""').contains(completeSyntax[i])) {
 					switch (completeSyntax[i]) {
-						case 'method':
+						case 'method ':
 							var firstIndex = 0;
 							var firstIndex2 = 0;
 							var firstIndex3 = 0;
@@ -733,43 +732,6 @@ class BLexer {
 										Console.log("<red>" + squigglyLines + "</>");
 									}
 								}
-								if (isInMethod
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').contains('"')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('(')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('/')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('+')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('-')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('mult')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('div')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('true')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('false')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('=')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('>')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('<')
-									&& !reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "").contains('outof')
-									&& Math.isNaN(Std.parseFloat(reg.replace(tokenStr.replace(" ", ""), '""').replace(" ", "")))
-									&& !paramVars.contains(tokenStr.split("[")[0].replace(" ", ""))
-									&& !localVars.contains(tokenStr.split("[")[0].replace(" ", ""))) {
-									Console.log("<b><light_white>"
-										+ Blue.currentFile
-										+ " - "
-										+ "</><b><red>Error [BLE0017]:</></><light_white> Unknown variable at line "
-										+ (linenum)
-										+ "</>");
-									gotErrors = true;
-									var arr = current.ltrim().trim().split("");
-									arr.insert(reg.replace(current.ltrim().trim(), '""').indexOf(tokenStr, firstIndex), "<b><red>");
-									arr.insert(reg.replace(current.ltrim().trim(), '""').indexOf(tokenStr, firstIndex) + tokenStr.length + 1, "</></>");
-									Console.log(arr.join(""));
-									var squigglyLines = "";
-									for (j in 0...reg.replace(current.ltrim().trim(), '""').indexOf(tokenStr, firstIndex)) {
-										squigglyLines += " ";
-									}
-									for (j in 0...tokenStr.length) {
-										squigglyLines += "~";
-									}
-									firstIndex += 1;
-								}
 								if (!reg.replace(current, '""').contains('/')) {
 									if (!reg.replace(current, '""').contains('[')) {
 										if (!localMethods.contains(tokenStr.replace(" ", "").split("(")[0])) {
@@ -1074,7 +1036,7 @@ class BLexer {
 												if (current.ltrim().split('=')[0].replace(' ', '').replace("~", "").contains("/")
 													&& (Blue.target == "c" || Blue.target == "cpp" || Blue.target == "go" || Blue.target == "javascript")
 													&& regular.match(tokenStr)) {
-													current = current.split('/')[1];
+													tokenStr = current.split('/')[1];
 												}
 												if (tokenStr.contains('.')
 													&& !tokenStr.contains('"')
@@ -1086,7 +1048,7 @@ class BLexer {
 													&& !tokenStr.contains('"')
 													&& (Blue.target == "c" || Blue.target == "cpp" || Blue.target == "go" || Blue.target == "javascript")
 													&& regular.match(tokenStr)) {
-													current = current.split('.')[1];
+													tokenStr = current.split('.')[1];
 												}
 											}
 											if (regular.match(trimmedCurrent)) {
@@ -1146,15 +1108,15 @@ class BLexer {
 									if (regular.match(trimmedCurrent)) {
 										if (!isInMethod)
 											currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-												(trimmedCurrent.replace("/", ".") + ";"),
+												(trimmedCurrent.replace("/", ".") + ";").replace("()()", "()"),
 												variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 										else if (Blue.target == "haxe") {
 											currentToken = BToken.MethodVariable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-												(trimmedCurrent.replace("/", ".") + ";"),
+												(trimmedCurrent.replace("/", ".") + ";").replace("()()", "()"),
 												variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 										} else {
 											currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-												(trimmedCurrent.replace("/", ".") + ";"),
+												(trimmedCurrent.replace("/", ".") + ";").replace("()()", "()"),
 												variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 										}
 									} else {
@@ -1200,12 +1162,13 @@ class BLexer {
 												}
 											} else {
 												currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-													(trimmedCurrent + ";"),
+													(trimmedCurrent + ";").replace("()()", "()"),
 													variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 											}
 										else if (Blue.target == "haxe" || Blue.target == "cs") {
 											currentToken = BToken.MethodVariable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-												(trimmedCurrent + ";"), variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
+												(trimmedCurrent + ";").replace("()()", "()"),
+												variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 										} else {
 											if (current.ltrim().split('=')[1].split("(")[1].split(")")[0].contains(".")) {
 												if (Blue.target == "c") {
@@ -1248,7 +1211,7 @@ class BLexer {
 													}
 												} else {
 													currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-														(trimmedCurrent + ";"),
+														(trimmedCurrent + ";").replace("()()", "()"),
 														variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 												}
 											} else {
@@ -1293,7 +1256,7 @@ class BLexer {
 													}
 												} else {
 													currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-														(trimmedCurrent + ";"),
+														(trimmedCurrent + ";").replace("()()", "()"),
 														variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 												}
 											}
@@ -1553,7 +1516,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case "if":
+						case "if ":
 							var firstIndex = 0;
 							var firstIndex2 = 0;
 							var firstIndex3 = 0;
@@ -1842,7 +1805,7 @@ class BLexer {
 										if (!testLex) {
 											tokensToParse.push(currentToken);
 										}
-									} else if (reg.replace(current, '""').contains('if')
+									} else if (reg.replace(current, '""').contains('if ')
 										&& !reg.replace(current, '""').ltrim().startsWith("if ")) {
 										Console.log("<b><light_white>"
 											+ Blue.currentFile
@@ -2281,7 +2244,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case 'else if':
+						case 'else if ':
 							var firstIndex = 0;
 							var firstIndex2 = 0;
 							var firstIndex3 = 0;
@@ -2624,7 +2587,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case 'else':
+						case 'else ':
 							if (!reg.replace(current, '""').ltrim().startsWith("else if ")) {
 								if (isInMethod) {
 									if (reg.replace(current, '""').ltrim().startsWith("else")
@@ -3319,16 +3282,17 @@ class BLexer {
 								}
 								Console.log("<red>" + squigglyLines + "</>");
 							}
-							if ((!reg.replace(current, '""').ltrim().contains('method'))
-								&& (!reg.replace(current, '""').ltrim().contains('main('))
-								&& (!reg.replace(current, '""').ltrim().contains('constructor('))
-								&& (!reg.replace(current, '""').ltrim().contains('loop '))
-								&& (!reg.replace(current, '""').ltrim().contains('if'))
-								&& (!reg.replace(current, '""').ltrim().contains('else if'))
-								&& (!reg.replace(current, '""').ltrim().contains('print!('))
-								&& (!reg.replace(current, '""').ltrim().contains('@'))
-								&& (!reg.replace(current, '""').ltrim().contains('super('))
-								&& (!reg.replace(current, '""').ltrim().contains('targetInject!('))) {
+							if ((!reg.replace(current, '""').ltrim().startsWith('method '))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('new'))
+								&& (!reg.replace(current, '""').ltrim().startsWith('loop '))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('if'))
+								&& (!reg.replace(current, '""').ltrim().startsWith('else if'))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('print!('))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('main('))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('@'))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('='))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('super('))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").contains('targetInject!('))) {
 								if (current.split("(")[0].replace(" ", "")
 								.replace(current.split("=")[0], "")
 								.replace("=", '')

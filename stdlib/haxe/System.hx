@@ -9,14 +9,6 @@ class System {
 		Sys.exit(exitCode);
 	}
 
-	public static function getDate():Dynamic {
-		return Date.now();
-	}
-
-	public static function getTime():Dynamic {
-		return Sys.time();
-	}
-
 	public static function varTrace(variable:Dynamic) {
 		Sys.println(variable);
 	}
