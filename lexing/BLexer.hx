@@ -88,14 +88,14 @@ class BLexer {
 
 	private static var stdNames:Map<String, Array<String>> = [
 		"MathTools" => ["arccos", "cosine", "sine", "floorValue"],
-		"System" => ["runcmd", "close", "varTrace"],
+		"System" => ["runcmd", "shutdown", "varTrace"],
 		"File" => ["read", "write"],
-		"ArrayTools" => ["pop", "shift", "arraySize"]
+		"ArrayTools" => ["pop", "shift", "arraySize", "addElement"]
 	];
 
 	private static var completeStd:Map<String, Array<Int>> = [
-		"arccos" => [1], "cosine" => [1], "power" => [1, 1], "sine" => [1], "floorValue" => [1], "runcmd" => [1], "close" => [1], "read" => [1],
-		"write" => [1, 1], "joinArray" => [1], "pop" => [1], "shift" => [1], "varTrace" => [1], "arraySize" => [1]];
+		"arccos" => [1], "cosine" => [1], "power" => [1, 1], "sine" => [1], "floorValue" => [1], "runcmd" => [1], "read" => [1], "write" => [1, 1],
+		"pop" => [1], "shift" => [1], "varTrace" => [1], "arraySize" => [1], 'addElement' => [1, 1], 'shutdown' => [1]];
 
 	private static var isInMethod:Bool = false;
 	private static var isInMain:Bool = false;
@@ -118,8 +118,8 @@ class BLexer {
 
 	static var tokensToParse:Array<Dynamic> = [];
 	static var completeSyntax:Array<String> = [
-		"method", "loop ", "if ", "+", "-", "mult", "div", "end", "else ", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
-		"***", "main(", "throw", "or", "[", "/", "(", "else if ", "<<", ">>", "null", "break", "continue", "open", "close", "targetInject!"
+		"method ", "loop ", "if ", "+", "-", "mult", "div", "end", "else", "stop", "continue", "then", "not", "=", "use", "try", "catch", "print!", "return",
+		"***", "main(", "throw", "or", "[", "/", "(", "else if ", "<<", ">>", "null", "break", "continue", "open ", "close ", "targetInject!"
 	];
 
 	public static function enumContent(contentToEnum:String, testLex:Bool = false):Bool {
@@ -732,6 +732,23 @@ class BLexer {
 										Console.log("<red>" + squigglyLines + "</>");
 									}
 								}
+								if (reg.replace(current.ltrim().split('=')[1].split("\r")[0].replace(" ", ""), '""').contains("[")
+									&& reg.replace(current.ltrim().split('=')[1].split("\r")[0].replace(" ", ""), '""').split("[").length > 2) {
+									Console.log("<b><light_white>"
+										+ Blue.currentFile
+										+ " - "
+										+ "</><b><red>Error [BLE0075]:</></><light_white> Nested arrays are not allowed at line "
+										+ (linenum)
+										+ "</>");
+									gotErrors = true;
+									Console.log("");
+									Console.log("<b><red>" + current.ltrim().trim() + "</></>");
+									var squigglyLines = "";
+									for (i in 0...current.ltrim().trim().split('').length) {
+										squigglyLines += "~";
+									}
+									Console.log("<red>" + squigglyLines + "</>");
+								}
 								if (!reg.replace(current, '""').contains('/')) {
 									if (!reg.replace(current, '""').contains('[')) {
 										if (!localMethods.contains(tokenStr.replace(" ", "").split("(")[0])) {
@@ -1019,6 +1036,10 @@ class BLexer {
 											whitespacesplit);
 									}
 								}
+								if (trimmedCurrent.contains('/'))
+									trimmedCurrent = trimmedCurrent.split('/')[1];
+								else if (trimmedCurrent.contains('/'))
+									tokenStr = tokenStr.split('/')[1];
 								if (reg.replace(current, '"').ltrim().contains('"')) {
 									trimmedCurrent = trimmedCurrent.replace(trimmedCurrent.split('"')[1].split('"')[0], tokenStr.split('"')[1].split('"')[0]);
 									for (j in 2...trimmedCurrent.split('"').length) {
@@ -1057,12 +1078,10 @@ class BLexer {
 														tokenStr + ";", variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 												else if (Blue.target == "haxe") {
 													currentToken = BToken.MethodVariable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-														tokenStr.replace("/", ".") + ";",
-														variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
+														tokenStr + ";", variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 												} else {
 													currentToken = BToken.Variable(current.ltrim().split('=')[0].replace(' ', '').replace("~", ""),
-														tokenStr.replace("/", ".") + ";",
-														variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
+														tokenStr + ";", variableTypes.get(current.ltrim().split('=')[0].replace(' ', '').replace("~", "")));
 												}
 											} else {
 												if (!isInMethod)
@@ -1897,6 +1916,10 @@ class BLexer {
 								if (endsNeededToEndMethod == 0 && !needsReturn) {
 									isInMethod = false;
 									paramVars = [];
+									for (key in paramTypes.keys()) {
+										variableTypes.remove(key);
+									}
+									paramTypes.clear();
 								}
 								if (endsNeededToEndMethod == 0 && (!needsReturn || needsReturn) && isInMain) {
 									isInMain = false;
@@ -1907,6 +1930,24 @@ class BLexer {
 										variableTypes.remove(key);
 									}
 									paramTypes.clear();
+								}
+
+								if (needsReturn && endsNeededToEndMethod == 0) {
+									Console.log("<b><light_white>"
+										+ Blue.currentFile
+										+ " - "
+										+ "</><b><red>Error [BLE0061]:</></><light_white> A method "
+										+ "was provided no return value at line "
+										+ (i + 1)
+										+ '</>');
+									gotErrors = true;
+									Console.log("");
+									Console.log("<b><red>" + current.ltrim().trim() + "</></>");
+									var squigglyLines = "";
+									for (i in 0...current.ltrim().trim().split('').length) {
+										squigglyLines += "~";
+									}
+									Console.log("<red>" + squigglyLines + "</>");
 								}
 								if (!testLex && (!isPublic || !isPrivate) && !isInLibrary) {
 									tokensToParse.push(currentToken);
@@ -2587,7 +2628,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case 'else ':
+						case 'else':
 							if (!reg.replace(current, '""').ltrim().startsWith("else if ")) {
 								if (isInMethod) {
 									if (reg.replace(current, '""').ltrim().startsWith("else")
@@ -2598,76 +2639,7 @@ class BLexer {
 										if (!testLex) {
 											tokensToParse.push(currentToken);
 										}
-									} else {
-										Console.log("<b><light_white>"
-											+ Blue.currentFile
-											+ " - "
-											+ "</><b><red>Error [BLE0047]:</></><light_white> Expected 'else' statement at line "
-											+ (linenum)
-											+ "</>");
-										gotErrors = true;
-										Console.log("");
-										Console.log("<b><red>" + current.ltrim().trim() + "</></>");
-										var squigglyLines = "";
-										for (i in 0...current.ltrim().trim().split('').length) {
-											squigglyLines += "~";
-										}
-										Console.log("<red>" + squigglyLines + "</>");
 									}
-									if (reg.replace(current, '""').ltrim().replace(' ', "").startsWith('else')
-										&& reg.replace(current, '""')
-											.ltrim()
-											.replace(' ', "")
-											.split('else')[1].contains("else")) {
-										Console.log("<b><light_white>"
-											+ Blue.currentFile
-											+ " - "
-											+ "</><b><red>Error [BLE0011]:</></><light_white> Expected expression at line "
-											+ (linenum)
-											+ "</>");
-										gotErrors = true;
-										Console.log("");
-										Console.log("<b><red>" + current.ltrim().trim() + "</></>");
-										var squigglyLines = "";
-										for (i in 0...current.ltrim().trim().split('').length) {
-											squigglyLines += "~";
-										}
-										Console.log("<red>" + squigglyLines + "</>");
-									} else if (!reg.replace(current, '""').ltrim().replace(' ', "").startsWith('else')
-										&& reg.replace(current, '""')
-											.ltrim()
-											.replace(' ', "")
-											.split('else')[1].contains("else")) {
-										Console.log("<b><light_white>"
-											+ Blue.currentFile
-											+ " - "
-											+ "</><b><red>Error [BLE0011]:</></><light_white> Expected expression at line "
-											+ (linenum)
-											+ "</>");
-										gotErrors = true;
-										Console.log("");
-										Console.log("<b><red>" + current.ltrim().trim() + "</></>");
-										var squigglyLines = "";
-										for (i in 0...current.ltrim().trim().split('').length) {
-											squigglyLines += "~";
-										}
-										Console.log("<red>" + squigglyLines + "</>");
-									}
-								} else {
-									Console.log("<b><light_white>"
-										+ Blue.currentFile
-										+ " - "
-										+ "</><b><red>Error [BLE0048]:</></><light_white> 'else' statement outside of method at line "
-										+ (linenum)
-										+ "</>");
-									gotErrors = true;
-									Console.log("");
-									Console.log("<b><red>" + current.ltrim().trim() + "</></>");
-									var squigglyLines = "";
-									for (i in 0...current.ltrim().trim().split('').length) {
-										squigglyLines += "~";
-									}
-									Console.log("<red>" + squigglyLines + "</>");
 								}
 							}
 
@@ -2693,7 +2665,6 @@ class BLexer {
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('print!('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('main('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('@'))
-								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('='))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('super('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").contains('targetInject!('))) {
 								if (isInMethod) {
@@ -3290,7 +3261,7 @@ class BLexer {
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('print!('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('main('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('@'))
-								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('='))
+								&& (!reg.replace(current, '""').ltrim().replace(" ", "").contains('='))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").startsWith('super('))
 								&& (!reg.replace(current, '""').ltrim().replace(" ", "").contains('targetInject!('))) {
 								if (current.split("(")[0].replace(" ", "")
@@ -3402,7 +3373,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case "open":
+						case "open ":
 							if (!isInMethod
 								&& reg.replace(current, '""').replace(" ", "").contains("open")
 								&& (new EReg("open\\s+" + "[A-Z+]", "i").match(reg.replace(current, '""'))
@@ -3442,7 +3413,7 @@ class BLexer {
 								Console.log("<red>" + squigglyLines + "</>");
 							}
 
-						case "close":
+						case "close ":
 							if (!isInMethod
 								&& reg.replace(current, '""').replace(" ", "").contains("close")
 								&& (new EReg("close\\s+" + "[A-Z+]", "i").match(reg.replace(current, '""'))
@@ -3599,15 +3570,9 @@ class BLexer {
 			"#include <sstream>",
 			"#include <string>",
 			"#include <array>",
-			"using namespace std;\n",
-			"#ifndef INCLUDED_ARRAY",
-			"#define INCLUDED_ARRAY",
-			"template<typename... T>",
-			"array<typename common_type<T...>::type, sizeof...(T)>",
-			"    unszd_raw_array(T &&...t) {",
-			"    return {forward<T>(t)...};",
-			"}",
-			"#endif"
+			"#include <vector>",
+			"#include <variant>",
+			"using namespace std;\n"
 		];
 		if (Blue.currentFile == "Main.bl") {
 			BGoUtil.goData = ['import "fmt"'];

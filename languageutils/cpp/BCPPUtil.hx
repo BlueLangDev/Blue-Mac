@@ -18,15 +18,8 @@ class BCPPUtil {
 		"#include <sstream>",
 		"#include <string>",
 		"#include <array>",
-		"using namespace std;\n",
-		"#ifndef INCLUDED_ARRAY",
-		"#define INCLUDED_ARRAY",
-		"template<typename... T>",
-		"array<typename common_type<T...>::type, sizeof...(T)>",
-		"    unszd_raw_array(T &&...t) {",
-		"    return {forward<T>(t)...};",
-		"}",
-		"#endif"
+		"#include <variant>",
+		"using namespace std;\n"
 	];
 	private static var iteratorQueue:Array<String> = [];
 	static var specificValues:Array<Dynamic> = [];
@@ -50,10 +43,10 @@ class BCPPUtil {
 						for (i in 0...strArr.length) {
 							var strElement = strArr[i];
 							if (strElement == "[" && (i >= endIndex || i <= startIndex)) {
-								strArr[i] = "unszd_raw_array(";
+								strArr[i] = "{";
 							}
 							if (strElement == "]" && (i >= endIndex || i <= startIndex)) {
-								strArr[i] = ")";
+								strArr[i] = "}";
 							}
 						}
 						str = strArr.join("");
@@ -82,10 +75,10 @@ class BCPPUtil {
 						for (i in 0...strArr.length) {
 							var strElement = strArr[i];
 							if (strElement == "[" && (i >= endIndex || i <= startIndex)) {
-								strArr[i] = "unszd_raw_array(";
+								strArr[i] = "{";
 							}
 							if (strElement == "]" && (i >= endIndex || i <= startIndex)) {
-								strArr[i] = ")";
+								strArr[i] = "}";
 							}
 						}
 						str = strArr.join("");
@@ -115,9 +108,12 @@ class BCPPUtil {
 						}
 					}
 				}
-				if (Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("(")
+				if (Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("{")
 					&& !Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("contains")) {
-					cppData.push(('auto &&' + Std.string(parsedAST.name).replace("\n", "") + ' = ' + Std.string(parsedAST.value)));
+					cppData.push(('vector<std::variant<int, string, bool, double, float, const char *>> '
+						+ Std.string(parsedAST.name).replace("\n", "")
+						+ ' = '
+						+ Std.string(parsedAST.value)));
 				} else {
 					if (parsedAST.label != "ClassVariable")
 						cppData.push(('auto ' + " " + Std.string(parsedAST.name).replace("\n", "") + ' = ' + Std.string(parsedAST.value)));
