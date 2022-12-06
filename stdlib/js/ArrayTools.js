@@ -1,10 +1,17 @@
 class ArrayTools {
 	static pop(array) {
-		return array.pop();
+		array.pop();
+		return array;
 	}
 
 	static shift(array) {
-		return array.shift();
+		array.shift();
+		return array;
+	}
+
+	static addElement(array, element) {
+		array.push(element);
+		return array;
 	}
 
 	static arraySize(array) {

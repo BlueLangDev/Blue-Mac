@@ -8,11 +8,7 @@ class System {
         );
     }
 
-    static exit(code) {
-        throw new Error();
-    }
-
-    static close(exitcode) {
+    static shutdown(exitcode) {
         throw new Error();
     }
 

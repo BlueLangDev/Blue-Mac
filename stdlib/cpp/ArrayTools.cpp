@@ -3,33 +3,187 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <any>
-#include <iterator>
 #include <string>
 #include <iostream>
 #include <exception>
+#include <algorithm>
 #include <vector>
 
-using namespace std;
-
-auto pop(auto &&array)
+class DynamicType
 {
-    auto element = array[(int)std::size(array) - 1];
-    for (int i = 0; i < (int)std::size(array) - 1; i++)
-        array[i] = array[i + 1];
-    array[(int)std::size(array) - 1] = NULL;
-    return element;
+public:
+    std::any varToCast;
+
+    DynamicType(std::any castedVar)
+    {
+        varToCast = castedVar;
+    }
+
+    auto operator==(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) == std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) == std::any_cast<double>((std::any)val));
+        }
+        if (varToCast.type() == typeid(const char *)  && ((std::any)val).type() == typeid(const char*))
+        {
+
+            return (std::any_cast<const char *>(varToCast) == std::any_cast<const char *>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) == std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator!=(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) != std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) != std::any_cast<double>((std::any)val));
+        }
+        if (varToCast.type() == typeid(const char *)  && ((std::any)val).type() == typeid(const char*))
+        {
+
+            return (std::any_cast<const char *>(varToCast) != std::any_cast<const char *>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) != std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator+(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) + std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) + std::any_cast<double>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) + std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator-(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) - std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) - std::any_cast<double>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) - std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator*(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) * std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) * std::any_cast<double>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) * std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator/(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) / std::any_cast<int>((std::any)val));
+        }
+        if (varToCast.type() == typeid(double)  && ((std::any)val).type() == typeid(double))
+        {
+
+            return (std::any_cast<double>(varToCast) / std::any_cast<double>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) / std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator%(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) % std::any_cast<int>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) % std::any_cast<bool>((std::any)val));
+        }
+    }
+    auto operator^(auto val) const
+    {
+        if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))
+        {
+
+            return (std::any_cast<int>(varToCast) ^ std::any_cast<int>((std::any)val));
+        }
+        if ((varToCast.type() == typeid(bool)  && ((std::any)val).type() == typeid(bool)))
+        {
+
+            return (std::any_cast<bool>(varToCast) ^ std::any_cast<bool>((std::any)val));
+        }
+    }
+};
+
+auto pop(auto array)
+{
+    array.pop_back();
+    return array;
 }
 
-auto shift(auto &&array)
+auto shift(auto array)
 {
-    auto element = array[0];
-    for (int i = 1; i < (int)std::size(array); i++)
-        array[i] = array[i + 1];
-    array[(int)std::size(array) - 1] = NULL;
-    return element;
+    array.pop_front();
+    return array;
 }
 
-auto arraySize(auto &&array)
+auto addElement(auto array, auto element)
 {
-    return (int)std::size(array);
+    array.push_back(DynamicType((std::any)element));
+    return array;
+}
+
+auto arraySize(auto array)
+{
+    return (int)array.size() + 1;
 }

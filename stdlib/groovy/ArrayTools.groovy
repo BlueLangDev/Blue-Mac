@@ -1,13 +1,19 @@
 def pop(array)
 {
-    return array.pop();
+    array.pop();
+    return array;
 }
 
 def shift(array)
 {
-    def element = array[0];
     array.remove(0);
-    return element;
+    return array;
+}
+
+def addElement(array, element)
+{
+    array.add(element);
+    return array;
 }
 
 def arraySize(array)

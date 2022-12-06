@@ -50,6 +50,14 @@ class BCPPUtil {
 							}
 						}
 						str = strArr.join("");
+						if (i > 0)
+							str = ("DynamicType((any)" + str + ")").replace("};)", ")};");
+						else if (i == 0) {
+							var starr = str.split("");
+							starr.insert(1, "DynamicType((any)");
+							str = starr.join("");
+							str = str + ")";
+						}
 						formattedValue = formattedValue.replace(formattedValue.split(",")[i], str);
 					}
 					var arr = formattedValue.split('');
@@ -82,6 +90,14 @@ class BCPPUtil {
 							}
 						}
 						str = strArr.join("");
+						if (i > 0)
+							str = ("DynamicType((any)" + str + ")").replace("};)", ")};");
+						else if (i == 0) {
+							var starr = str.split("");
+							starr.insert(1, "DynamicType((any)");
+							str = starr.join("");
+							str = str + ")";
+						}
 						parsedAST.value = Std.string(parsedAST.value).replace(Std.string(parsedAST.value).split(" ")[i], str);
 					}
 				}
@@ -108,12 +124,8 @@ class BCPPUtil {
 						}
 					}
 				}
-				if (Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("{")
-					&& !Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("contains")) {
-					cppData.push(('vector<std::variant<int, string, bool, double, float, const char *>> '
-						+ Std.string(parsedAST.name).replace("\n", "")
-						+ ' = '
-						+ Std.string(parsedAST.value)));
+				if (Std.string(parsedAST.value).replace(' ', '').replace("", "").startsWith("{")) {
+					cppData.push(('vector<DynamicType> ' + Std.string(parsedAST.name).replace("\n", "") + ' = ' + Std.string(parsedAST.value)));
 				} else {
 					if (parsedAST.label != "ClassVariable")
 						cppData.push(('auto ' + " " + Std.string(parsedAST.name).replace("\n", "") + ' = ' + Std.string(parsedAST.value)));
@@ -182,10 +194,50 @@ class BCPPUtil {
 			cppData.push('break;');
 		}
 		if (parsedAST.label == "If") {
-			cppData.push('if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			cppData.push('if ($condition) {');
 		}
 		if (parsedAST.label == "Otherwise If") {
-			cppData.push('} else if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			cppData.push('} else if ($condition) {');
 		}
 		if (parsedAST.label == "For") {
 			cppData.push(('for (int ${parsedAST.iterator} = ${parsedAST.numberOne}; ${parsedAST.iterator} < ${parsedAST.numberTwo}; ${parsedAST.iterator}++) {')

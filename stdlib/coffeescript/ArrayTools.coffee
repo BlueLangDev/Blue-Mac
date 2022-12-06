@@ -1,10 +1,16 @@
 class ArrayTools
 
 pop: (array) ->
-return array.pop()
+array.pop()
+return array
 
 shift: (array) ->
-return array.shift()
+array.shift()
+return array
+
+addElement: (array, element) ->
+array.push(element)
+return array
 
 arraySize: (array) ->
 return array.length

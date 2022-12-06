@@ -94,10 +94,50 @@ class BGroovyUtil {
 			groovyData.push('break');
 		}
 		if (parsedAST.label == "If") {
-			groovyData.push('if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			groovyData.push('if ($condition) {');
 		}
 		if (parsedAST.label == "Otherwise If") {
-			groovyData.push('} else if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			groovyData.push('} else if ($condition) {');
 		}
 		if (parsedAST.label == "For") {
 			groovyData.push(('for (${parsedAST.iterator} = ${parsedAST.numberOne}; ${parsedAST.iterator} < ${parsedAST.numberTwo}; ${parsedAST.iterator}++) {')

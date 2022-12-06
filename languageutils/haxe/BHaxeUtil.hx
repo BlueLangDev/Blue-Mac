@@ -120,10 +120,50 @@ class BHaxeUtil {
 			haxeData.push('break;');
 		}
 		if (parsedAST.label == "If") {
-			haxeData.push('if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			haxeData.push('if ($condition) {');
 		}
 		if (parsedAST.label == "Otherwise If") {
-			haxeData.push('} else if (${Std.string(parsedAST.condition)}) {');
+			var reg = ~/"([^"]*?)"/g;
+			var condition = reg.replace(Std.string(parsedAST.condition), '""');
+			for (i in 1...condition.split("[").length) {
+				var splitted = condition.split("[")[i].split("]")[0];
+				if (!splitted.contains("-1"))
+					splitted = splitted + "-1";
+				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
+			}
+			var arr = condition.split('');
+			for (i in 0...condition.split('"').length) {
+				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
+					for (j in 0...arr.length) {
+						if (arr[j] == '"' && arr[j + 1] == '"') {
+							arr.insert(j + 1, Std.string(parsedAST.condition).split('"')[i].split('"')[0]);
+							break;
+						}
+					}
+				}
+			}
+			condition = arr.join('');
+			haxeData.push('} else if ($condition) {');
 		}
 		if (parsedAST.label == "For") {
 			haxeData.push(('for (${parsedAST.iterator} in ${parsedAST.numberOne}...${parsedAST.numberTwo}) {').replace("\n", "").replace("\r", ""));

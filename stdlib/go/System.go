@@ -1,22 +1,22 @@
 package main
 
 import (
-	"os/exec"
+	"fmt"
 	"os"
-   "fmt"
+	"os/exec"
 )
 
 func runcmd(command dynamic) {
 
-    cmd := exec.Command(command.(string))
+	cmd := exec.Command(command.(string))
 
-    cmd.Run()
+	cmd.Run()
 }
 
-func close(exitcode dynamic) {
-    os.Exit(exitcode.(int))
+func shutdown(exitcode dynamic) {
+	os.Exit(exitcode.(int))
 }
 
 func varTrace(vari dynamic) {
-   fmt.Println(vari)
+	fmt.Println(vari)
 }

@@ -5,7 +5,7 @@ class System {
 		Sys.command(command);
 	}
 
-	public static function close(exitCode:Dynamic) {
+	public static function shutdown(exitCode:Dynamic) {
 		Sys.exit(exitCode);
 	}
 

@@ -2,11 +2,18 @@ package export.hxsrc;
 
 class ArrayTools {
 	public static function pop(array:Dynamic):Dynamic {
-		return array.pop();
+		array.pop();
+		return array;
 	}
 
 	public static function shift(array:Dynamic):Dynamic {
-		return array.shift();
+		array.shift();
+		return array;
+	}
+
+	public static function addElement(array:Dynamic, element:Dynamic) {
+		array.push(element);
+		return array;
 	}
 
 	public static function arraySize(array:Dynamic):Dynamic {

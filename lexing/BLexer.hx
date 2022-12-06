@@ -1564,6 +1564,7 @@ class BLexer {
 											}
 											var whitespacesplit = trimmedCurrent.split(' ')[j];
 											var whitespacesplitlast = trimmedCurrent.split(' ')[j - 1];
+											var neededACast = false;
 											if (!completeSyntax.contains(whitespacesplit)
 												&& whitespacesplit != 'and'
 												&& whitespacesplit != 'outof'
@@ -1577,6 +1578,7 @@ class BLexer {
 												&& whitespacesplit != "/"
 												&& !trimmedCurrent.split(' ')[j].contains('/')
 												&& !whitespacesplit.contains('"')
+												&& !whitespacesplit.contains('[')
 												&& whitespacesplit != "div"
 												&& whitespacesplit != "mult"
 												&& whitespacesplit != "="
@@ -2325,6 +2327,7 @@ class BLexer {
 											&& whitespacesplit != "/"
 											&& !trimmedCurrent.split(' ')[j].contains('/')
 											&& !whitespacesplit.contains('"')
+											&& !whitespacesplit.contains('[')
 											&& whitespacesplit != "div"
 											&& whitespacesplit != "mult"
 											&& whitespacesplit != "="
@@ -3570,7 +3573,6 @@ class BLexer {
 			"#include <sstream>",
 			"#include <string>",
 			"#include <array>",
-			"#include <vector>",
 			"#include <variant>",
 			"using namespace std;\n"
 		];
