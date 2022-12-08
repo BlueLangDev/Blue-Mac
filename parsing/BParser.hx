@@ -7,6 +7,7 @@ import languageutils.coffeescript.BCoffeeScriptUtil;
 import languageutils.haxe.BHaxeUtil;
 import languageutils.groovy.BGroovyUtil;
 import lexing.BLexer.BToken;
+
 typedef ASTStruct = {
 	var token:BToken;
 	var iterator:Dynamic;

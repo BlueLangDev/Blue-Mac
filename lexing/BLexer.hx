@@ -1434,7 +1434,7 @@ class BLexer {
 						case 'loop ':
 							if (isInMethod) {
 								if (reg.replace(current, '""').ltrim().startsWith("loop ")) {
-									if (!new EReg("loop" + "[A-Z+]" + "in" + "[0-9+]" + "until" + '.+', "i").match(current.replace(' ', ''))) {
+									if (!new EReg("loop" + "[A-Z+]" + "in" + ".+" + "until" + '.+', "i").match(current.replace(' ', ''))) {
 										Console.log("<b><light_white>"
 											+ Blue.currentFile
 											+ " - "

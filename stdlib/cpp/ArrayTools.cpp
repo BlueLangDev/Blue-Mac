@@ -18,7 +18,7 @@ public:
     {
         varToCast = castedVar;
     }
-
+    
     auto operator==(auto val) const
     {
         if (varToCast.type() == typeid(int) && ((std::any)val).type() == typeid(int))

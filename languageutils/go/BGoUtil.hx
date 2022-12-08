@@ -175,6 +175,28 @@ class BGoUtil {
 					splitted = splitted + "-1";
 				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
 			}
+			condition = condition.replace(">", ".(float64)> .(float64)");
+			condition = condition.replace("<", ".(float64)< .(float64)");
+			condition = condition.replace("+", ".(float64)+ .(float64)");
+			condition = condition.replace("-", ".(float64)- .(float64)");
+			condition = condition.replace("*", ".(float64)* .(float64)");
+			condition = condition.replace("/", ".(float64)/ .(float64)");
+			condition = condition.replace("^", ".(float64)^ .(float64)");
+			condition = condition.replace("%", ".(float64)% .(float64)");
+			for (i in 0...condition.split(" ").length) {
+				var splitted = condition.split(" ")[i];
+				if (splitted.startsWith(".(float64)") && !splitted.endsWith("]")) {
+					splitted = splitted.replace(".(float64)", "") + '.(float64)';
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				} else {
+					splitted = splitted.replace(".(float64)", "");
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				}
+				if (splitted.contains("[") && splitted.contains(".(float64)")) {
+					splitted = splitted.replace(".(float64)", "") + '.(float64)';
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				}
+			}
 			var arr = condition.split('');
 			for (i in 0...condition.split('"').length) {
 				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
@@ -198,6 +220,28 @@ class BGoUtil {
 					splitted = splitted + "-1";
 				condition = condition.replace(condition.split("[")[i].split("]")[0], splitted);
 			}
+			condition = condition.replace(">", ".(float64)>.(float64)");
+			condition = condition.replace("<", ".(float64)<.(float64)");
+			condition = condition.replace("+", ".(float64)+.(float64)");
+			condition = condition.replace("-", ".(float64)-.(float64)");
+			condition = condition.replace("*", ".(float64)*.(float64)");
+			condition = condition.replace("/", ".(float64)/.(float64)");
+			condition = condition.replace("^", ".(float64)^.(float64)");
+			condition = condition.replace("%", ".(float64)%.(float64)");
+			for (i in 0...condition.split(" ").length) {
+				var splitted = condition.split(" ")[i];
+				if (splitted.startsWith(".(float64)") && !splitted.endsWith("]")) {
+					splitted = splitted.replace(".(float64)", "") + '.(float64)';
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				} else {
+					splitted = splitted.replace(".(float64)", "");
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				}
+				if (splitted.contains("[") && splitted.contains(".(float64)")) {
+					splitted = splitted.replace(".(float64)", "") + '.(float64)';
+					condition = condition.replace(condition.split(" ")[i], splitted);
+				}
+			}
 			var arr = condition.split('');
 			for (i in 0...condition.split('"').length) {
 				if (condition.split('"')[i].split('"')[0] == '' && Std.string(parsedAST.condition).split('"')[i].split('"')[0] != '') {
@@ -213,6 +257,10 @@ class BGoUtil {
 			goData.push('} else if ($condition) {');
 		}
 		if (parsedAST.label == "For") {
+			if (Math.isNaN(Std.parseFloat(parsedAST.numberOne)))
+				parsedAST.numberOne = Std.string(parsedAST.numberOne) + ".(int)";
+			if (Math.isNaN(Std.parseFloat(parsedAST.numberTwo)))
+				parsedAST.numberTwo = Std.string(parsedAST.numberTwo) + ".(int)";
 			goData.push(('for ${parsedAST.iterator} := ${parsedAST.numberOne}; ${parsedAST.iterator} < ${parsedAST.numberTwo}; ${parsedAST.iterator}++ {')
 				.replace("\n", "")
 				.replace("\r", ""));

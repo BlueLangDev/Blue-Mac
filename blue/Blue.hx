@@ -350,8 +350,10 @@ class Blue {
 									}
 								}
 							}
-						}
-					}
+						} else
+							Sys.exit(1);
+					} else
+						Sys.exit(1);
 				}
 			}
 			FileSystem.createDirectory("export/bin");
