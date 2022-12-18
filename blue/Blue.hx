@@ -368,19 +368,19 @@ class Blue {
 			var parsedConf = haxe.Json.parse(File.getContent("project_config.json"));
 			switch (target) {
 				case 'c':
-					if (FileSystem.exists("export/csrc") && FileSystem.readDirectory("export/csrc").length == files.length + 8) {
+					if (FileSystem.exists("export/csrc") && FileSystem.readDirectory("export/csrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.c.command;
 						Sys.command(buildCommand);
 					}
 				case "coffeescript":
 					if (FileSystem.exists("export/coffeescriptsrc")
-						&& (FileSystem.readDirectory("export/coffeescriptsrc").length == files.length + 4
-							|| FileSystem.readDirectory("export/coffeescriptsrc").length == (files.length + 8 + files.length))) {
+						&& (FileSystem.readDirectory("export/coffeescriptsrc").length == files.length + 6
+							|| FileSystem.readDirectory("export/coffeescriptsrc").length == (files.length + 12 + files.length))) {
 						buildCommand = parsedConf.build_commands.coffeescript.command;
 						Sys.command(buildCommand);
 					}
 				case "cpp":
-					if (FileSystem.exists("export/cppsrc") && FileSystem.readDirectory("export/cppsrc").length == files.length + 4) {
+					if (FileSystem.exists("export/cppsrc") && FileSystem.readDirectory("export/cppsrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.cpp.command;
 						Sys.command(buildCommand);
 					}
@@ -389,9 +389,9 @@ class Blue {
 						FileSystem.deleteFile('export/gosrc/go.mod');
 					}
 					if (FileSystem.exists("export/gosrc")
-						&& (FileSystem.readDirectory("export/gosrc").length == files.length + 4
-							|| FileSystem.readDirectory("export/gosrc").length == files.length + 5
-							|| FileSystem.readDirectory("export/gosrc").length == files.length + 6)) {
+						&& (FileSystem.readDirectory("export/gosrc").length == files.length + 6
+							|| FileSystem.readDirectory("export/gosrc").length == files.length + 7
+							|| FileSystem.readDirectory("export/gosrc").length == files.length + 8)) {
 						Sys.setCwd(Sys.getCwd() + '/export/gosrc');
 						Sys.command('go mod init export/gosrc');
 						buildCommand = parsedConf.build_commands.go.command;
@@ -402,12 +402,12 @@ class Blue {
 						FileSystem.deleteFile('export/gosrc/go.mod');
 					}
 				case "groovy":
-					if (FileSystem.exists("export/groovysrc") && FileSystem.readDirectory("export/groovysrc").length == files.length + 4) {
+					if (FileSystem.exists("export/groovysrc") && FileSystem.readDirectory("export/groovysrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.groovy.command;
 						Sys.command(buildCommand);
 					}
 				case "haxe":
-					if (FileSystem.exists("export/hxsrc") && FileSystem.readDirectory("export/hxsrc").length == files.length + 4) {
+					if (FileSystem.exists("export/hxsrc") && FileSystem.readDirectory("export/hxsrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.haxe.command;
 						Sys.command(buildCommand);
 					}
