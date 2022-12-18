@@ -180,6 +180,8 @@ class Blue {
 									BCPPUtil.cppData.insert(0, '#include ' + '"File.cpp"' + '');
 									BCPPUtil.cppData.insert(0, '#include ' + '"MathTools.cpp"' + '');
 									BCPPUtil.cppData.insert(0, '#include ' + '"ArrayTools.cpp"' + '');
+									BCPPUtil.cppData.insert(0, '#include ' + '"SocketTools.cpp"' + '');
+									BCPPUtil.cppData.insert(0, '#include ' + '"Strings.cpp"' + '');
 									BCPPUtil.cppData.insert(0, '#pragma once');
 									lexSourceFile(rawContent);
 									if (FileSystem.exists(Sys.programPath()
@@ -273,6 +275,8 @@ class Blue {
 									BHaxeUtil.haxeData.insert(1, 'import export.hxsrc.' + "System" + ';');
 									BHaxeUtil.haxeData.insert(1, 'import export.hxsrc.' + "MathTools" + ';');
 									BHaxeUtil.haxeData.insert(1, 'import export.hxsrc.' + "ArrayTools" + ';');
+									BHaxeUtil.haxeData.insert(1, 'import export.hxsrc.' + "SocketTools" + ';');
+									BHaxeUtil.haxeData.insert(1, 'import export.hxsrc.' + "Strings" + ';');
 									for (includeFile in FileSystem.readDirectory(directory)) {
 										if (includeFile.endsWith(".bl")) {
 											if (includeFile != file) {
