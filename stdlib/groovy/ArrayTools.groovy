@@ -1,3 +1,5 @@
+class ArrayTools {
+
 def pop(array)
 {
     array.pop();
@@ -19,4 +21,5 @@ def addElement(array, element)
 def arraySize(array)
 {
     return len(array);
+}
 }

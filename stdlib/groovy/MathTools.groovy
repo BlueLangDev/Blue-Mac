@@ -1,5 +1,7 @@
 import java.lang.Math;
 
+class MathTools {
+
 def arcsine(x) {
 	return Math.asin(x);
 }
@@ -18,4 +20,5 @@ def sine(x) {
 	
 def floorValue(x) {
 	return Math.floor(x);
+}
 }

@@ -1,12 +1,12 @@
 class File
 
-read: (file) ->
+read = (file) ->
 fs = require "fs"
 
 filen = file
 fs.readFileSync filen, 'utf8'
 
-write: (file) ->
+write = (file) ->
 fs = require "fs"
 
 filen = file

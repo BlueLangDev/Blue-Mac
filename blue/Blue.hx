@@ -202,7 +202,15 @@ class Blue {
 									if (fileNumber == 1) {
 										if (FileSystem.exists("export/gosrc")) {
 											for (file in FileSystem.readDirectory("export/gosrc")) {
-												FileSystem.deleteFile("export/gosrc/" + file);
+												if (!FileSystem.isDirectory('export/gosrc/$file'))
+													FileSystem.deleteFile("export/gosrc/" + file);
+												else {
+													for (filebin in FileSystem.readDirectory("export/gosrc/" + file)) {
+														if (FileSystem.exists('export/gosrc/$file/$filebin'))
+															FileSystem.deleteFile('export/gosrc/$file/$filebin');
+													}
+													FileSystem.deleteDirectory('export/gosrc/$file');
+												}
 											}
 										}
 									}

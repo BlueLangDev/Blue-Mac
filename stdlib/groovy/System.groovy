@@ -1,3 +1,6 @@
+class System 
+{
+
 def runcmd(cmd) {
    println cmd.execute().text;
 }
@@ -8,4 +11,5 @@ def shutdown(exitCode) {
 
 def varTrace(vari) {
    println(vari);
+}
 }

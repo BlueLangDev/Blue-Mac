@@ -90,12 +90,16 @@ class BLexer {
 		"MathTools" => ["arccos", "cosine", "sine", "floorValue"],
 		"System" => ["runcmd", "shutdown", "varTrace"],
 		"File" => ["read", "write"],
-		"ArrayTools" => ["pop", "shift", "arraySize", "addElement"]
+		"ArrayTools" => ["pop", "shift", "arraySize", "addElement"],
+		"SocketTools" => ["socketMake", "socketConnect", "socketWrite", "socketRead", "socketDestroy"],
+		"Strings" => ["stringSize", "stringReplace", "stringSub"]
 	];
 
 	private static var completeStd:Map<String, Array<Int>> = [
 		"arccos" => [1], "cosine" => [1], "power" => [1, 1], "sine" => [1], "floorValue" => [1], "runcmd" => [1], "read" => [1], "write" => [1, 1],
-		"pop" => [1], "shift" => [1], "varTrace" => [1], "arraySize" => [1], 'addElement' => [1, 1], 'shutdown' => [1]];
+		"pop" => [1], "shift" => [1], "varTrace" => [1], "arraySize" => [1], 'addElement' => [1, 1], 'shutdown' => [1], "socketMake" => [1],
+		"socketConnect" => [1, 1, 1], "socketWrite" => [1, 1, 1], "socketRead" => [1], "socketDestroy" => [1], "stringSize" => [1],
+		"stringReplace" => [1, 1, 1], "stringSub" => [1, 1, 1]];
 
 	private static var isInMethod:Bool = false;
 	private static var isInMain:Bool = false;
@@ -105,7 +109,7 @@ class BLexer {
 	private static var isPrivate:Bool = false;
 	private static var isPublic:Bool = false;
 
-	private static var closedLibs:Array<String> = ['ArrayTools', "MathTools", "System", "File"];
+	private static var closedLibs:Array<String> = ['ArrayTools', "MathTools", "System", "File", "SocketTools", "Strings"];
 
 	private static var needsReturn:Bool = false;
 
@@ -133,7 +137,7 @@ class BLexer {
 
 		currentLibrary = "";
 
-		closedLibs = ['ArrayTools', "MathTools", "System", "File"];
+		closedLibs = ['ArrayTools', "MathTools", "System", "File", "SocketTools", "Strings"];
 
 		for (file in FileSystem.readDirectory(Blue.directory)) {
 			closedLibs.push(file.replace(".bl", ""));
@@ -1023,6 +1027,8 @@ class BLexer {
 										&& !current.ltrim().contains("MathTools")
 										&& !current.ltrim().contains("System")
 										&& !current.ltrim().contains("ArrayTools")
+										&& !current.ltrim().contains("SocketTools")
+										&& !current.ltrim().contains("Strings")
 										&& current.ltrim().contains("/")
 										&& current.ltrim().split('/')[0].contains(whitespacesplit)) {}
 									if (trimmedCurrent.split(' ')[j].contains('/')) {
@@ -1305,6 +1311,8 @@ class BLexer {
 										&& !reg.replace(current.ltrim(), '""').contains("MathTools")
 										&& !reg.replace(current.ltrim(), '""').contains("System")
 										&& !reg.replace(current.ltrim(), '""').contains("ArrayTools")
+										&& !reg.replace(current.ltrim(), '""').contains("SocketTools")
+										&& !reg.replace(current.ltrim(), '""').contains("Strings")
 										&& current.ltrim().contains("/")) {
 										if (FileSystem.exists(Blue.directory
 											+ "/"
@@ -2836,6 +2844,8 @@ class BLexer {
 											&& !reg.replace(current.ltrim(), '""').contains("MathTools")
 											&& !reg.replace(current.ltrim(), '""').contains("System")
 											&& !reg.replace(current.ltrim(), '""').contains("ArrayTools")
+											&& !reg.replace(current.ltrim(), '""').contains("SocketTools")
+											&& !reg.replace(current.ltrim(), '""').contains("Strings")
 											&& current.ltrim().contains("/")) {
 											if (FileSystem.exists(Blue.directory
 												+ "/"
@@ -3272,7 +3282,12 @@ class BLexer {
 								.replace("=", '')
 								.contains("/") && (Blue.target == "c" || Blue.target == "cpp" || Blue.target == "go")) {
 									var newCurrent = reg.replace(current, '""').replace(" ", "").split(")\r")[0];
-									newCurrent = newCurrent.replace("ArrayTools/", "").replace("MathTools/", "").replace("System/", "").replace("File/", "");
+									newCurrent = newCurrent.replace("ArrayTools/", "")
+										.replace("MathTools/", "")
+										.replace("System/", "")
+										.replace("File/", "")
+										.replace("Strings/", "")
+										.replace("SocketTools/", "");
 									for (file in FileSystem.readDirectory(Blue.directory)) {
 										var name = file.replace(".bl", "");
 										if (newCurrent.contains(name) && !new EReg("[A-Z+]" + name, "i").match(newCurrent))
@@ -3295,7 +3310,9 @@ class BLexer {
 									newCurrent = newCurrent.replace("ArrayTools/", "ArrayTools.")
 										.replace("MathTools/", "MathTools.")
 										.replace("System/", "System.")
-										.replace("File/", "File.");
+										.replace("File/", "File.")
+										.replace("SocketTools/", "SocketTools.")
+										.replace("Strings/", "Strings.");
 									for (file in FileSystem.readDirectory(Blue.directory)) {
 										var name = file.replace(".bl", "");
 										if (newCurrent.contains(name) && !new EReg("[A-Z+]" + name, "i").match(newCurrent))
