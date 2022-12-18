@@ -2,7 +2,9 @@
 
 #include <vector>
 #ifdef _WIN32
+#include <windows.h>
 #include <winsock2.h>
+#include <ws2tcpip.h>
 #endif
 #ifdef __APPLE__
 #include <unistd.h>
@@ -22,16 +24,11 @@
 bool didInit = false;
 bool printReceived = false;
 
-auto sentDataPrefix = "";
-auto recievedDataPrefix = "";
-
 std::vector<SOCKET> socketsArray = {};
 std::vector<int> socketsArrayL = {};
 std::vector<std::string> trackedSocketsArray = {};
 
-struct addrinfo *result = NULL,
-                *ptr = NULL,
-                *hints = NULL;
+struct addrinfo *result = NULL, *ptr = NULL, hints;
 
 struct sockaddr_in serv_addr;
 
@@ -40,11 +37,6 @@ int lastIResult = 0;
 auto socketMake(auto tag)
 {
 #ifdef _WIN32
-
-    ZeroMemory(&hints, sizeof(hints));
-    hints->ai_family = AF_UNSPEC;
-    hints->ai_socktype = SOCK_STREAM;
-    hints->ai_protocol = IPPROTO_TCP;
 
     if (!didInit)
     {
@@ -56,6 +48,11 @@ auto socketMake(auto tag)
     SOCKET sock = INVALID_SOCKET;
     socketsArray.push_back(sock);
     trackedSocketsArray.push_back(tag);
+    
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
 #endif
 #ifdef __linux__
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -72,7 +69,7 @@ auto socketMake(auto tag)
 auto socketConnect(auto tag, auto port, auto host)
 {
 #ifdef _WIN32
-    int iResult = getaddrinfo(host, port, &hints, &result);
+    int iResult = getaddrinfo(host, std::to_string(port).c_str(), &hints, &result);
     if (iResult != 0)
         WSACleanup();
     ptr = result;
@@ -82,7 +79,7 @@ auto socketConnect(auto tag, auto port, auto host)
         if (trackedSocketsArray[i] == tag)
         {
             socketsArray[i] = socket(ptr->ai_family, ptr->ai_socktype,
-                                            ptr->ai_protocol);
+                                     ptr->ai_protocol);
 
             iResult = connect(socketsArray[i], ptr->ai_addr, (int)ptr->ai_addrlen);
             if (iResult == SOCKET_ERROR)
@@ -108,7 +105,7 @@ auto socketConnect(auto tag, auto port, auto host)
 
             inet_pton(AF_INET, host, &serv_addr.sin_addr);
             socketsArray[i] = connect(socketsArray[i], (struct sockaddr *)&serv_addr,
-                                             sizeof(serv_addr));
+                                      sizeof(serv_addr));
             break;
         }
     }
@@ -123,7 +120,7 @@ auto socketConnect(auto tag, auto port, auto host)
 
             inet_pton(AF_INET, host, &serv_addr.sin_addr);
             socketsArray[i] = connect(socketsArray[i], (struct sockaddr *)&serv_addr,
-                                             sizeof(serv_addr));
+                                      sizeof(serv_addr));
             break;
         }
     }
@@ -137,7 +134,7 @@ auto socketWrite(auto tag, auto data)
     {
         if (trackedSocketsArray[i] == tag)
         {
-            lastIResult = send(trackedSocketsArray[i], data, (int)strlen(data), 0);
+            lastIResult = send(socketsArray[i], data, (int)strlen(data), 0);
             if (lastIResult == SOCKET_ERROR)
             {
                 closesocket(socketsArray[i]);
@@ -152,7 +149,7 @@ auto socketWrite(auto tag, auto data)
     {
         if (trackedSocketsArray[i] == tag)
         {
-            send(trackedSocketsArray[i], data, strlen(data), 0);
+            send(socketsArray[i], data, strlen(data), 0);
             break;
         }
     }
@@ -162,14 +159,14 @@ auto socketWrite(auto tag, auto data)
     {
         if (trackedSocketsArray[i] == tag)
         {
-            send(trackedSocketsArray[i], data, strlen(data), 0);
+            send(socketsArray[i], data, strlen(data), 0);
             break;
         }
     }
 #endif
 }
 
-auto socketRead(auto tag, auto messageSize)
+auto socketRead(auto tag)
 {
 #ifdef _WIN32
     for (int i = 0; i < trackedSocketsArray.size(); i++)
@@ -189,7 +186,7 @@ auto socketRead(auto tag, auto messageSize)
     {
 
         if (trackedSocketsArray[i] == tag)
-        {   
+        {
             int recvbuflen = 1024;
             char recvbuf[1024];
             auto recieved = read(socketsArray[i], recvbuf, recvbuflen);
