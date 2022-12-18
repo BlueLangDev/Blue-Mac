@@ -7,7 +7,6 @@ import languageutils.coffeescript.BCoffeeScriptUtil;
 import languageutils.haxe.BHaxeUtil;
 import languageutils.groovy.BGroovyUtil;
 import lexing.BLexer.BToken;
-import customtargetutils.CustomTarget;
 
 typedef ASTStruct = {
 	var token:BToken;
@@ -212,10 +211,6 @@ class BParser {
 			case "javascript":
 				BJSUtil.toJs(serializedResult);
 				BJSUtil.buildJsFile();
-
-			default:
-				CustomTarget.toStrings(serializedResult);
-				CustomTarget.buildFile();
 		}
 
 		token = null;
