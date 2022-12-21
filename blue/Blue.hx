@@ -80,7 +80,7 @@ class Blue {
 	{
 		"build_commands":{
 		   "cpp":{
-			  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
+			  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20"
 		   },
 		   "go":{
 			  "command":"go build -o bin/Main.exe"
@@ -102,54 +102,6 @@ class Blue {
 	public static function mapSource(directory:String) {
 		Blue.directory = directory;
 		var files = [];
-
-		if (Sys.systemName() == "Windows") {
-			projectConfig = '
-			{
-				"build_commands":{
-				   "cpp":{
-					  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
-				   },
-				   "go":{
-					  "command":"go build -o bin/Main.exe"
-				   },
-				   "groovy":{
-					  "command":"groovyc export/groovysrc/Main.groovy"
-				   },
-				   "haxe":{
-					  "command":"haxe -cp src --main'
-				+ "'export.hxsrc.Main'"
-				+ '--cpp export/bin"
-				   },
-				   "javascript":{
-				   	  "command":"node export/jssrc/Main.js"
-				   }
-				}
-			} ';
-		} else {
-			projectConfig = '
-			{
-				"build_commands":{
-				   "cpp":{
-					  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
-				   },
-				   "go":{
-					  "command":"go build -o bin/Main.exe"
-				   },
-				   "groovy":{
-					  "command":"groovyc export/groovysrc/Main.groovy"
-				   },
-				   "haxe":{
-					  "command":"haxe -cp src --main'
-				+ "'export.hxsrc.Main'"
-				+ '--cpp export/bin"
-				   },
-				   "javascript":{
-				   	  "command":"node export/jssrc/Main.js"
-				   }
-				}
-			} ';
-		}
 		if (FileSystem.exists(directory) && FileSystem.isDirectory(directory)) {
 			for (file in FileSystem.readDirectory(directory)) {
 				if (!FileSystem.isDirectory(file) && file.endsWith(".bl")) {
