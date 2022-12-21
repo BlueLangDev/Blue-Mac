@@ -283,7 +283,7 @@ class Blue {
 									for (includeFile in FileSystem.readDirectory(directory)) {
 										if (includeFile.endsWith(".bl")) {
 											if (includeFile != file) {
-												BJSUtil.jsData.insert(0, '${includeFile.replace(".bl", ".js")} = require(' + '"./$includeFile"' + ');');
+												BJSUtil.jsData.insert(0, '${includeFile.replace(".bl", "")} = require(' + '"./${includeFile.replace(".bl", "")}"' + ');');
 											}
 										}
 									}
