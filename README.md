@@ -10,7 +10,7 @@
 To use Blue, you need a compiler for the language you are targetting, these are almost always found on the language vendors website.
 
 ## Testing it out
-Go into the parent directory of the directory containing your .BL source files, open a command line terminal IN THAT FOLDER, and type "blue 'source-code-folder' 'target'", and execute the command. Depending on whether your code has errors, your program should be compiled into an executable file (or simply transpiled, for the javascript target)
+Go into the parent directory of the directory containing your .BL source files, open a command line terminal IN THAT FOLDER, and type "blue 'source-code-folder' 'target'", and execute the command. Depending on whether your code has errors, your program should be compiled into an executable file (or simply transpiled and interpreted, for the javascript target)
 
 # Building from source
 
