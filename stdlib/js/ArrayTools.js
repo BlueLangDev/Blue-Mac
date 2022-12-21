@@ -1,4 +1,4 @@
-class ArrayTools {
+module.exports = class ArrayTools {
 	static pop(array) {
 		array.pop();
 		return array;

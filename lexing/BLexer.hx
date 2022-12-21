@@ -8,7 +8,6 @@ import sys.io.File;
 import languageutils.js.BJSUtil;
 import languageutils.go.BGoUtil;
 import languageutils.cpp.BCPPUtil;
-import languageutils.coffeescript.BCoffeeScriptUtil;
 import languageutils.haxe.BHaxeUtil;
 import languageutils.groovy.BGroovyUtil;
 import cpp.Pointer;
@@ -3582,7 +3581,6 @@ class BLexer {
 		}
 		tokensToParse = [];
 		BLexer.content = contentToEnum;
-		BCoffeeScriptUtil.coffeeScriptData = ["class", "main()"];
 		BCPPUtil.cppData = [
 			"#include <cstddef>",
 			"#include <cstdio>",
@@ -3600,7 +3598,7 @@ class BLexer {
 		}
 		BGroovyUtil.groovyData = ["", "", "class", "{"];
 		BHaxeUtil.haxeData = ["", "", "class", "{"];
-		BJSUtil.jsData = ["", "main();"];
+		BJSUtil.jsData = ["", "", "class", '{'];
 		return gotErrors;
 	}
 

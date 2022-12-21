@@ -1,6 +1,6 @@
 var exec = import('child_process').exec;
 
-class System {
+module.exports = class System {
 
     static runcmd(cmd) {
         exec(cmd,

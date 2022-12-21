@@ -3,7 +3,6 @@ package blue;
 import languageutils.js.BJSUtil;
 import languageutils.go.BGoUtil;
 import languageutils.cpp.BCPPUtil;
-import languageutils.coffeescript.BCoffeeScriptUtil;
 import languageutils.haxe.BHaxeUtil;
 import languageutils.groovy.BGroovyUtil;
 #if sys
@@ -15,7 +14,7 @@ using StringTools;
 
 class Blue {
 	public static var target:String = "Haxe";
-	public static var supportedTargets:Array<String> = ["cpp", "coffeescript", "go", "groovy", "haxe", "javascript"];
+	public static var supportedTargets:Array<String> = ["cpp", "go", "groovy", "haxe", "javascript"];
 
 	public static var targetUtilityClass:Dynamic = BHaxeUtil;
 
@@ -80,14 +79,8 @@ class Blue {
 	static var projectConfig:String = '
 	{
 		"build_commands":{
-		   "c":{
-			  "command":"gcc -w -o export/bin/Main export/csrc/Main.c"
-		   },
-		   "coffeescript":{
-			  "command":"coffee --compile export/coffeescriptsrc/."
-		   },
 		   "cpp":{
-			  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20"
+			  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
 		   },
 		   "go":{
 			  "command":"go build -o bin/Main.exe"
@@ -99,6 +92,9 @@ class Blue {
 			  "command":"haxe -cp src --main'
 		+ "'export.hxsrc.Main'"
 		+ '--cpp export/bin"
+		   },
+		   "javascript":{
+		      "command":"node export/jssrc/Main.js"
 		   }
 		}
     } ';
@@ -106,6 +102,54 @@ class Blue {
 	public static function mapSource(directory:String) {
 		Blue.directory = directory;
 		var files = [];
+
+		if (Sys.systemName() == "Windows") {
+			projectConfig = '
+			{
+				"build_commands":{
+				   "cpp":{
+					  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
+				   },
+				   "go":{
+					  "command":"go build -o bin/Main.exe"
+				   },
+				   "groovy":{
+					  "command":"groovyc export/groovysrc/Main.groovy"
+				   },
+				   "haxe":{
+					  "command":"haxe -cp src --main'
+				+ "'export.hxsrc.Main'"
+				+ '--cpp export/bin"
+				   },
+				   "javascript":{
+				   	  "command":"node export/jssrc/Main.js"
+				   }
+				}
+			} ';
+		} else {
+			projectConfig = '
+			{
+				"build_commands":{
+				   "cpp":{
+					  "command":"g++ -w -o export/bin/Main export/cppsrc/Main.cpp -std=c++20 -lwsock32 -lWs2_32"
+				   },
+				   "go":{
+					  "command":"go build -o bin/Main.exe"
+				   },
+				   "groovy":{
+					  "command":"groovyc export/groovysrc/Main.groovy"
+				   },
+				   "haxe":{
+					  "command":"haxe -cp src --main'
+				+ "'export.hxsrc.Main'"
+				+ '--cpp export/bin"
+				   },
+				   "javascript":{
+				   	  "command":"node export/jssrc/Main.js"
+				   }
+				}
+			} ';
+		}
 		if (FileSystem.exists(directory) && FileSystem.isDirectory(directory)) {
 			for (file in FileSystem.readDirectory(directory)) {
 				if (!FileSystem.isDirectory(file) && file.endsWith(".bl")) {
@@ -134,32 +178,6 @@ class Blue {
 							var rawContent = File.getContent(directory + "/" + file);
 							mapFile(directory + "/" + file);
 							switch (target) {
-								case "coffeescript":
-									if (fileNumber == 1) {
-										if (FileSystem.exists("export/coffeescriptsrc")) {
-											for (file in FileSystem.readDirectory("export/coffeescriptsrc")) {
-												FileSystem.deleteFile("export/coffeescriptsrc/" + file);
-											}
-										}
-									}
-									BCoffeeScriptUtil.fileName = file;
-									lexSourceFile(rawContent);
-									if (FileSystem.exists(Sys.programPath()
-										.replace("Blue\\Blue", "Blue\\")
-										.replace("Blue/Blue", "Blue/")
-										.replace(".exe", "") + "stdlib/coffeescript")) {
-										for (file in FileSystem.readDirectory(Sys.programPath()
-											.replace("Blue\\Blue", "Blue\\")
-											.replace("Blue/Blue", "Blue/")
-											.replace(".exe", "") + "stdlib/coffeescript")) {
-											File.copy(Sys.programPath()
-												.replace("Blue\\Blue", "Blue\\")
-												.replace("Blue/Blue", "Blue/")
-												.replace(".exe", "") + "stdlib/coffeescript/"
-												+ file,
-												'export/coffeescriptsrc/$file');
-										}
-									}
 								case "cpp":
 									if (fileNumber == 1) {
 										if (FileSystem.exists("export/cppsrc")) {
@@ -310,6 +328,19 @@ class Blue {
 										}
 									}
 									BJSUtil.fileName = file;
+									for (includeFile in FileSystem.readDirectory(directory)) {
+										if (includeFile.endsWith(".bl")) {
+											if (includeFile != file) {
+												BJSUtil.jsData.insert(0, '${includeFile.replace(".bl", ".js")} = require(' + '"./$includeFile"' + ');');
+											}
+										}
+									}
+									BJSUtil.jsData.insert(0, 'File = require(' + "'./File'" + ');');
+									BJSUtil.jsData.insert(0, 'System = require(' + "'./System'" + ');');
+									BJSUtil.jsData.insert(0, 'MathTools = require(' + "'./MathTools'" + ');');
+									BJSUtil.jsData.insert(0, 'ArrayTools = require(' + "'./ArrayTools'" + ');');
+									BJSUtil.jsData.insert(0, 'SocketTools = require(' + "'./SocketTools'" + ');');
+									BJSUtil.jsData.insert(0, 'Strings = require(' + "'./Strings'" + ');');
 									lexSourceFile(rawContent);
 									if (FileSystem.exists(Sys.programPath()
 										.replace("Blue\\Blue", "Blue\\")
@@ -329,8 +360,6 @@ class Blue {
 									}
 							}
 							switch (target) {
-								case "coffeescript":
-									Console.log("- " + currentFile_Noerr.replace(".bl", ".coffee"));
 								case "cpp":
 									Console.log("- " + currentFile_Noerr.replace(".bl", ".cpp"));
 								case "go":
@@ -371,18 +400,6 @@ class Blue {
 			FileSystem.createDirectory("export/bin");
 			var parsedConf = haxe.Json.parse(File.getContent("project_config.json"));
 			switch (target) {
-				case 'c':
-					if (FileSystem.exists("export/csrc") && FileSystem.readDirectory("export/csrc").length == files.length + 6) {
-						buildCommand = parsedConf.build_commands.c.command;
-						Sys.command(buildCommand);
-					}
-				case "coffeescript":
-					if (FileSystem.exists("export/coffeescriptsrc")
-						&& (FileSystem.readDirectory("export/coffeescriptsrc").length == files.length + 6
-							|| FileSystem.readDirectory("export/coffeescriptsrc").length == (files.length + 12 + files.length))) {
-						buildCommand = parsedConf.build_commands.coffeescript.command;
-						Sys.command(buildCommand);
-					}
 				case "cpp":
 					if (FileSystem.exists("export/cppsrc") && FileSystem.readDirectory("export/cppsrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.cpp.command;
@@ -413,6 +430,11 @@ class Blue {
 				case "haxe":
 					if (FileSystem.exists("export/hxsrc") && FileSystem.readDirectory("export/hxsrc").length == files.length + 6) {
 						buildCommand = parsedConf.build_commands.haxe.command;
+						Sys.command(buildCommand);
+					}
+				case "javascript":
+					if (FileSystem.exists("export/jssrc") && FileSystem.readDirectory("export/jssrc").length == files.length + 6) {
+						buildCommand = parsedConf.build_commands.javascript.command;
 						Sys.command(buildCommand);
 					}
 			}

@@ -1,13 +1,13 @@
-class SocketTools {
-    net = require('net');
+net = require('net');
 
-    socketsArray = [];
-    trackedSocketsArray = [];
+socketsArray = [];
+trackedSocketsArray = [];
 
-    lastRead = "";
+lastRead = "";
 
+module.exports = class SocketTools {
     static socketMake(tag) {
-        sock = new net.Socket();
+        var sock = new net.Socket();
         socketsArray.push(sock);
         trackedSocketsArray.push(tag);
     }
@@ -15,9 +15,9 @@ class SocketTools {
     static socketConnect(tag, port, host) {
         for (var i = 0; i < trackedSocketsArray.length; i++) {
             if (trackedSocketsArray[i] == tag) {
-                sock = socketsArray[i];
+                var sock = socketsArray[i];
                 sock.connect(port, host);
-                socket.on('data', (data) => {
+                sock.on('data', (data) => {
                     lastRead = data;
                 })
             }
@@ -27,13 +27,13 @@ class SocketTools {
     static socketWrite(tag, data) {
         for (var i = 0; i < trackedSocketsArray.length; i++) {
             if (trackedSocketsArray[i] == tag) {
-                extractedSock = socketsArray[i];
+                var extractedSock = socketsArray[i];
                 extractedSock.write(`${data}`);
             }
         }
     }
 
-    static socketRead(tag, data) {
+    static socketRead(tag) {
         for (var i = 0; i < trackedSocketsArray.length; i++) {
             if (trackedSocketsArray[i] == tag) {
                 return lastRead;
@@ -44,7 +44,7 @@ class SocketTools {
     static socketDestroy(tag, data) {
         for (var i = 0; i < trackedSocketsArray.length; i++) {
             if (trackedSocketsArray[i] == tag) {
-                extractedSock = socketsArray[i];
+                var extractedSock = socketsArray[i];
                 extractedSock.destroy();
                 trackedSocketsArray.remove(trackedSocketsArray[i]);
                 socketsArray.remove(extractedSock);

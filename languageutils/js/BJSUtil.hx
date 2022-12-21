@@ -7,7 +7,7 @@ import sys.FileSystem;
 using StringTools;
 
 class BJSUtil {
-	public static var jsData:Array<String> = ["", "main();"];
+	public static var jsData:Array<String> = ["", "", "class", '{'];
 	static var specificValues:Array<Dynamic> = [];
 	static var oldValues:Array<Dynamic> = [];
 	static public var extension:Dynamic = null;
@@ -15,6 +15,21 @@ class BJSUtil {
 
 	public static function toJs(AST:Dynamic) {
 		var parsedAST = haxe.Json.parse(AST);
+		for (i in 0...jsData.length) {
+			if (jsData[i] == "class") {
+				jsData[i] = 'class ${fileName.replace(".bl", '')}';
+				if (extension != null) {
+					jsData[i] = jsData[i] + " extends  " + extension;
+				}
+				break;
+			}
+		}
+		for (i in 0...jsData.length) {
+			if (jsData[i] == "main();") {
+				jsData[i] = '${fileName.replace(".bl", '')}.main();';
+				break;
+			}
+		}
 		if (parsedAST.label == "Variable") {
 			var reg = ~/"([^"]*?)"/g;
 			if (!Std.string(parsedAST.name).contains("[")
@@ -62,9 +77,9 @@ class BJSUtil {
 		}
 		if (parsedAST.label == "Method") {
 			if (parsedAST.args[0] == null) {
-				jsData.push('function ${parsedAST.name}() {');
+				jsData.push('static ${parsedAST.name}() {');
 			} else {
-				jsData.push(('function ${parsedAST.name}(${parsedAST.args[0].join(", ")}) {\n').replace("()", "()"));
+				jsData.push(('static ${parsedAST.name}(${parsedAST.args[0].join(", ")}) {\n').replace("()", "()"));
 			}
 		}
 		if (parsedAST.label == "Throw") {
@@ -215,13 +230,21 @@ class BJSUtil {
 			}
 		}
 		if (parsedAST.label == "Main") {
-			jsData.push('function main() {');
+			jsData.push('static main() {');
 		}
 	}
 
 	static public function buildJsFile() {
 		FileSystem.createDirectory("export/jssrc");
 		sys.io.File.write('export/jssrc/${fileName.replace(".bl", ".js")}', false);
-		sys.io.File.saveContent('export/jssrc/${fileName.replace(".bl", ".js")}', jsData.join('\n').replace('\n{\n}', "\n{"));
+		if (fileName == "Main.bl")
+			sys.io.File.saveContent('export/jssrc/${fileName.replace(".bl", ".js")}',
+				jsData.join('\n')
+					.replace('\n{\n}',
+						"\n{") +
+				'\n}\n\nmodule.exports.${fileName.replace(".bl", '')} = ${fileName.replace(".bl", '')}\n\n${fileName.replace(".bl", '')}.main();');
+		else
+			sys.io.File.saveContent('export/jssrc/${fileName.replace(".bl", ".js")}',
+				jsData.join('\n').replace('\n{\n}', "\n{") + '\n}\n\nmodule.exports.${fileName.replace(".bl", '')} = ${fileName.replace(".bl", '')}');
 	}
 }

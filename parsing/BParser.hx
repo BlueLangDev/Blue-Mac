@@ -3,7 +3,6 @@ package parsing;
 import languageutils.js.BJSUtil;
 import languageutils.go.BGoUtil;
 import languageutils.cpp.BCPPUtil;
-import languageutils.coffeescript.BCoffeeScriptUtil;
 import languageutils.haxe.BHaxeUtil;
 import languageutils.groovy.BGroovyUtil;
 import lexing.BLexer.BToken;
@@ -193,9 +192,6 @@ class BParser {
 		var serializedResult = haxe.Json.stringify(astStructure);
 
 		switch (blue.Blue.target) {
-			case "coffeescript":
-				BCoffeeScriptUtil.toCoffeeScript(serializedResult);
-				BCoffeeScriptUtil.buildCoffeeScriptFile();
 			case "cpp":
 				BCPPUtil.toCPP(serializedResult);
 				BCPPUtil.buildCPPFile();

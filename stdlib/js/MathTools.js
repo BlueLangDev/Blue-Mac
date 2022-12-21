@@ -1,4 +1,4 @@
-class MathTools {
+module.exports = class MathTools {
 
     static arcsine(x) {
         return Math.asin(x);

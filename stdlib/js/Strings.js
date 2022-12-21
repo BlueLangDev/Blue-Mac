@@ -1,4 +1,4 @@
-class Strings
+module.exports = class Strings
 {
     static stringSize(text) 
     {
